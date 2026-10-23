@@ -1,0 +1,10 @@
+{
+  "name": "guanzhi-framework",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "check": "node --check dist/navigation.js && node --check dist/cloud.js && node --check dist/ai-config.js && node --check dist/ai-client.js && node --check dist/assistant.js && node --check dist/app.js && node --check dist/practice.js && node --check dist/judgment.js && node --check dist/scoring.js && node --check dist/learning.js && node --check dist/content.js && node --check dist/chapter-index.js && node --check dist/chapter-links.js && node --check dist/illustrations.js && node scripts/check.mjs"
+  }
+}

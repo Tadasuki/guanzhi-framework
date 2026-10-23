@@ -1,0 +1,224 @@
+{
+  "fonts": [
+    {
+      "family": "OPPO Sans 4.0",
+      "originalBytes": 22741096,
+      "glyphs": 7316,
+      "files": [
+        {
+          "file": "oppo4-0.b15d07365569.woff2",
+          "bytes": 76712,
+          "characters": 258,
+          "core": true
+        },
+        {
+          "file": "oppo4-1.dce10635b212.woff2",
+          "bytes": 185268,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "oppo4-2.76021d370497.woff2",
+          "bytes": 195132,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "oppo4-3.dda91fc04e34.woff2",
+          "bytes": 190984,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "oppo4-4.68c572640fd8.woff2",
+          "bytes": 110828,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "oppo4-5.49d2d12f8126.woff2",
+          "bytes": 179912,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "oppo4-6.cfc1e0208ac5.woff2",
+          "bytes": 206196,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "oppo4-7.84ae90768c6b.woff2",
+          "bytes": 226072,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "oppo4-8.c15297c1e539.woff2",
+          "bytes": 242772,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "oppo4-9.490c613e314d.woff2",
+          "bytes": 232052,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "oppo4-10.ada57cdaf16f.woff2",
+          "bytes": 256300,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "oppo4-11.2e953ac4136e.woff2",
+          "bytes": 212884,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "oppo4-12.de9ce11d5f6e.woff2",
+          "bytes": 247132,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "oppo4-13.e9893c061dbb.woff2",
+          "bytes": 238260,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "oppo4-14.e9c8efbb1eda.woff2",
+          "bytes": 197452,
+          "characters": 402,
+          "core": false
+        }
+      ]
+    },
+    {
+      "family": "ZhiYue Headline",
+      "originalBytes": 59899480,
+      "glyphs": 274,
+      "files": [
+        {
+          "file": "headline-0.d3d456c5d33f.woff2",
+          "bytes": 106224,
+          "characters": 182,
+          "core": true
+        },
+        {
+          "file": "headline-1.4f7c92955ab5.woff2",
+          "bytes": 54292,
+          "characters": 92,
+          "core": false
+        }
+      ]
+    },
+    {
+      "family": "ZhiYue Reading Serif",
+      "originalBytes": 4449148,
+      "glyphs": 7547,
+      "files": [
+        {
+          "file": "reading-0.0ec60f8223c6.woff2",
+          "bytes": 54636,
+          "characters": 258,
+          "core": true
+        },
+        {
+          "file": "reading-1.e633cc08ee4e.woff2",
+          "bytes": 85536,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "reading-2.e52fc17ddad4.woff2",
+          "bytes": 92244,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "reading-3.7b851df38fc1.woff2",
+          "bytes": 91168,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "reading-4.6b8f3b17f629.woff2",
+          "bytes": 78544,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "reading-5.a3df5882ec02.woff2",
+          "bytes": 81116,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "reading-6.4a5ff4bead76.woff2",
+          "bytes": 100224,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "reading-7.3360d0fbda0d.woff2",
+          "bytes": 102720,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "reading-8.943e60a684e0.woff2",
+          "bytes": 98556,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "reading-9.9b438b2a088c.woff2",
+          "bytes": 111324,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "reading-10.eb3e2f8c3f60.woff2",
+          "bytes": 106688,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "reading-11.a25640ecffb0.woff2",
+          "bytes": 96840,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "reading-12.04aa2d11c22b.woff2",
+          "bytes": 111928,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "reading-13.0d33e98b3576.woff2",
+          "bytes": 96708,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "reading-14.22d93509a925.woff2",
+          "bytes": 113500,
+          "characters": 512,
+          "core": false
+        },
+        {
+          "file": "reading-15.5efb6f23a708.woff2",
+          "bytes": 32348,
+          "characters": 121,
+          "core": false
+        }
+      ]
+    }
+  ],
+  "cssBytes": 87146
+}

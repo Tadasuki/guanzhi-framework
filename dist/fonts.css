@@ -1,0 +1,21 @@
+/* Same-origin WOFF2 web subsets preserve the existing font outlines and weights. */
+:root {
+  --font-heading: 'ZhiYue Headline', 'Songti SC', serif;
+  --font-text-serif: 'ZhiYue Reading Serif', 'ZhiYue Headline', 'Songti SC', serif;
+  --font-body: 'OPPO Sans 4.0', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-family: var(--font-body);
+}
+
+/* 页面级大标题：思源宋体，700 字重下横细竖粗的对比最好看。 */
+h1, .brand strong, .cover-title {
+  font-family: var(--font-heading);
+  font-synthesis: weight;
+}
+
+/* 章节、题型、题干等内部标题：霞鹜新致宋，横画更实，小字号仍可辨认。 */
+h2, h3, h4, h5, h6 {
+  font-family: var(--font-text-serif);
+  font-synthesis: weight;
+}
+
+.guide-number { font-family: var(--font-body); }

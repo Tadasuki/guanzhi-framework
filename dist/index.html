@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN" data-reading-size="standard">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#245d50" />
+    <meta name="description" content="观知，一个以教材为依据的可复用学习网站框架。" />
+    <title>观知 · 学习网站框架</title>
+    <style>.startup-shell{max-width:420px;margin:18vh auto;padding:32px;color:#494050;font-family:system-ui,sans-serif}.startup-shell strong{font-size:32px;letter-spacing:.2em}.startup-shell p{line-height:1.8}.startup-shell span{font-size:13px;color:#80758b}</style>
+    <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml" />
+    <script>
+      try {
+        const saved = JSON.parse(localStorage.getItem('guanzhi:reading') || '{}') || {};
+        document.documentElement.dataset.readingSize = ['standard','comfort','large'].includes(saved.fontSize) ? saved.fontSize : 'standard';
+        document.documentElement.dataset.theme = ['sage','mist','lilac','apricot','rose','slate'].includes(saved.theme) ? saved.theme : 'sage';
+        const appearance = ['light','dark','system'].includes(saved.appearance) ? saved.appearance : 'light';
+        document.documentElement.dataset.mode = appearance === 'dark' || (appearance === 'system' && matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+      } catch {}
+    </script>
+    <link rel="stylesheet" href="./fonts-web.css" />
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./themes.css" />
+    <link rel="stylesheet" href="./practice-layout.css" />
+    <link rel="stylesheet" href="./fonts.css" />
+    <link rel="stylesheet" href="./refinements.css" />
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">跳转到学习内容</a>
+    <div id="app"><div class="startup-shell" role="status"><strong>观知</strong><p>让注意力，回到知识本身。</p><span>正在进入学习空间…</span></div></div>
+    <noscript>请启用 JavaScript，以使用教材目录和页面导航。</noscript>
+  </body>
+</html>
