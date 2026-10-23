@@ -175,3 +175,90 @@ button.question-ask { border: 0; padding: 4px 0; background: none; font: inherit
 .outline-return { margin: -12px 0 24px; }
 .outline-return { position: sticky; top: 12px; z-index: 5; background: var(--surface); box-shadow: 0 3px 12px color-mix(in srgb,var(--shadow-color) 8%,transparent); }
 .outline-page:has(.outline-return) .chapter,.outline-page:has(.outline-return) .section-list > span { scroll-margin-top: 80px; }
+
+/* AI connection panel: quiet, structured, and visually related to the study settings. */
+.ai-settings .settings-panel {
+  padding: 0;
+  overflow: hidden;
+  background: var(--surface);
+  border-color: var(--border-strong);
+  box-shadow: 0 12px 34px color-mix(in srgb, var(--shadow-color) 5%, transparent);
+}
+.ai-settings .appearance-description {
+  position: relative;
+  overflow: hidden;
+  padding: 24px 28px 22px;
+  background: linear-gradient(118deg, var(--tint), color-mix(in srgb, var(--surface) 84%, var(--accent-soft)));
+  border-bottom: 1px solid var(--border);
+}
+.ai-settings .appearance-description::after {
+  content: '';
+  position: absolute;
+  width: 170px;
+  height: 170px;
+  right: -55px;
+  top: -78px;
+  border: 1px solid color-mix(in srgb, var(--green) 18%, transparent);
+  border-radius: 50%;
+  box-shadow: 0 0 0 16px color-mix(in srgb, var(--green) 5%, transparent), 0 0 0 32px color-mix(in srgb, var(--green) 3%, transparent);
+  pointer-events: none;
+}
+.ai-settings .appearance-description h3 { position: relative; z-index: 1; font-size: 15px; font-weight: 600; letter-spacing: .1px; }
+.ai-settings .appearance-description p { position: relative; z-index: 1; max-width: 660px; margin-top: 8px; color: var(--text-secondary); font-size: 12px; line-height: 1.8; }
+.ai-settings .api-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 18px 20px;
+  padding: 24px 28px 26px;
+}
+.ai-settings .api-grid label { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.ai-settings .api-grid label span { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); font-size: 10px; font-weight: 600; letter-spacing: .3px; }
+.ai-settings .api-grid label span::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--green); opacity: .7; }
+.ai-settings .api-grid .api-wide { grid-column: 1 / -1; }
+.ai-settings .api-grid input,
+.ai-settings .api-grid select {
+  width: 100%;
+  min-height: 42px;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: var(--surface-alt);
+  color: var(--ink);
+  outline: none;
+  font: inherit;
+  font-size: 12px;
+  transition: border-color 160ms ease-out, box-shadow 160ms ease-out, background 160ms ease-out;
+}
+.ai-settings .api-grid select { appearance: auto; cursor: pointer; }
+.ai-settings .api-grid input::placeholder { color: var(--muted); }
+.ai-settings .api-grid input:hover,
+.ai-settings .api-grid select:hover { border-color: var(--border-strong); background: var(--surface); }
+.ai-settings .api-grid input:focus,
+.ai-settings .api-grid select:focus { border-color: var(--green); background: var(--surface); box-shadow: 0 0 0 3px color-mix(in srgb, var(--green) 12%, transparent); }
+.ai-settings .api-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 17px 28px;
+  border-top: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+.ai-settings .api-toggle { width: 34px; height: 20px; }
+.ai-settings .api-actions > span { line-height: 1.7; }
+.ai-settings .api-actions .button { margin-left: auto; min-height: 36px; padding: 9px 14px; gap: 10px; }
+.ai-settings .api-actions .button:active { transform: scale(.97); }
+.ai-settings .settings-hint { padding: 0 28px 20px; margin: 0; font-size: 10px; line-height: 1.7; }
+@media (max-width: 600px) {
+  .ai-settings .appearance-description { padding: 20px 18px; }
+  .ai-settings .api-grid { grid-template-columns: 1fr; gap: 15px; padding: 20px 18px 21px; }
+  .ai-settings .api-grid .api-wide { grid-column: auto; }
+  .ai-settings .api-actions { align-items: flex-start; flex-wrap: wrap; padding: 15px 18px; }
+  .ai-settings .api-actions .button { width: 100%; margin: 2px 0 0 44px; }
+  .ai-settings .settings-hint { padding: 0 18px 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ai-settings .api-grid input, .ai-settings .api-grid select { transition: none; }
+}
