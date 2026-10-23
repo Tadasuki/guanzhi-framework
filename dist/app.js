@@ -8,7 +8,7 @@ import { themes, sanitizePreferences, sanitizeLearning, toggleFavorite, recordOu
 import { createPractice } from './practice.js';
 import { indexEntries } from './chapter-index.js';
 import { referencesFor, chapterReferenceLabel, outlineHref, pastQuestionHref } from './chapter-links.js';
-import { aiProviders, readAiConfig, writeAiConfig } from './ai-config.js';
+import { aiProviders, providerFor, readAiConfig, writeAiConfig, fetchAvailableModels, testAiConnection } from './ai-config.js';
 
 const icons = {
   book: '<path d="M3 4c3-1 6 0 9 2 3-2 6-3 9-2v15c-3-1-6 0-9 2-3-2-6-3-9-2z"/><path d="M12 6v15"/>',
@@ -65,6 +65,7 @@ const routes = [
 ];
 let preferences = sanitizePreferences(readLocal('guanzhi:reading', {}));
 let aiConfig = readAiConfig();
+let aiConnectionState = { kind: 'idle', message: '' };
 let sidebarCollapsed = readLocal('guanzhi:sidebar-collapsed', false) === true;
 let learning = sanitizeLearning(readLocal('guanzhi:learning', {}));
 let toastTimer;
@@ -314,7 +315,10 @@ function cloudSettings() {
   return `<section class="settings-section cloud-settings"><h2>云端备份</h2><div class="settings-panel"><div class="setting-row"><div><h3 data-cloud-status>${cloud.lastSynced?'已备份到云端':'正在连接云端…'}</h3><p>作答、成绩、收藏、错题和学习偏好自动保存；离线后联网补传。</p></div><button class="button subtle small" data-cloud-action="sync">立即备份</button></div><div class="cloud-recovery"><h3>换设备也能继续学习</h3><p>本设备自动识别。请保存恢复码，换手机、浏览器或清除全部网站数据后，用恢复码找回记录。IP 和设备特征仅辅助校验，不会单独作为恢复凭据。</p><button class="button subtle small" data-cloud-action="copy">复制我的恢复码</button><div class="cloud-restore"><label for="cloud-recovery-code">使用恢复码找回</label><input id="cloud-recovery-code" type="password" autocomplete="off" placeholder="粘贴 ZY- 开头的恢复码"><button class="button subtle small" data-cloud-action="restore">恢复并同步</button></div>${cloud.remote?'<button class="button primary" data-cloud-action="publish">打开线上网站，继续学习</button>':''}</div>${cloud.history.length?`<div class="cloud-history"><h3>最近答卷</h3>${cloud.history.map(item=>`<div><span>${escape(item.title)}<small>${item.submitted?'已交卷':'答题中'}</small></span><button class="button small subtle" data-cloud-resume="${escape(item.id)}">${item.submitted?'查看结果':'继续答题'}</button></div>`).join('')}</div>`:''}</div></section>`;
 }
 function aiSettings() {
-  return `<section class="settings-section ai-settings" aria-labelledby="ai-heading"><h2 id="ai-heading">智能服务接入</h2><div class="settings-panel"><div class="appearance-description"><h3>接入你自己的 AI 服务</h3><p>框架不内置任何密钥。配置只保存在当前浏览器，并通过站点后台转发给批改或云助手接口。</p></div><div class="api-grid"><label><span>服务商</span><select id="ai-provider">${aiProviders.map(item => `<option value="${item.id}" ${item.id === aiConfig.provider ? 'selected' : ''}>${item.label}</option>`).join('')}</select></label><label><span>模型名称</span><input id="ai-model" value="${escape(aiConfig.model)}" placeholder="例如：gpt-4o-mini" autocomplete="off"></label><label class="api-wide"><span>API Key</span><input id="ai-api-key" type="password" value="${escape(aiConfig.apiKey)}" placeholder="粘贴当前服务商的 API Key" autocomplete="off"></label><label class="api-wide"><span>接口地址</span><input id="ai-base-url" value="${escape(aiConfig.baseUrl)}" placeholder="https://api.example.com/v1" autocomplete="url"></label></div><div class="api-actions"><label class="toggle api-toggle"><input id="ai-enabled" type="checkbox" ${aiConfig.enabled ? 'checked' : ''}><span></span></label><span>允许云助手和主观题批改使用此配置</span><button class="button primary small" data-save-ai>保存接入配置</button></div><p class="settings-hint">保存后只写入本机 guanzhi:ai-config。请不要把真实密钥提交到 GitHub。</p></div></section>`;
+  const provider = providerFor(aiConfig.provider);
+  const models = aiConfig.models?.length ? aiConfig.models : provider.models;
+  const status = aiConnectionState.kind === 'success' ? `<span class="ai-status-dot success"></span>连接成功（${aiConnectionState.message}ms）` : aiConnectionState.kind === 'error' ? `<span class="ai-status-dot error"></span>${escape(aiConnectionState.message)}` : '<span class="ai-status-dot"></span>尚未测试连接';
+  return `<section class="settings-section ai-settings" aria-labelledby="ai-heading"><h2 id="ai-heading">智能服务接入</h2><div class="settings-panel"><div class="appearance-description"><h3>接入你自己的 AI 服务</h3><p>预设服务商使用官方接口；自定义服务可以填写自己的兼容接口。</p></div><div class="api-grid"><label><span>服务商</span><select id="ai-provider">${aiProviders.map(item => `<option value="${item.id}" ${item.id === aiConfig.provider ? 'selected' : ''}>${item.label}</option>`).join('')}</select></label><label><span>模型</span><div class="model-control"><select id="ai-model" ${models.length ? '' : 'disabled'}><option value="">${models.length ? '选择模型' : '填写 Key 后获取模型'}</option>${models.map(model => `<option value="${escape(model)}" ${model === aiConfig.model ? 'selected' : ''}>${escape(model)}</option>`).join('')}</select><button class="icon-button model-refresh" type="button" data-fetch-models aria-label="刷新可用模型" title="刷新可用模型">${icon('expand')}</button></div></label><label class="api-wide"><span>API Key</span><input id="ai-api-key" type="password" value="${escape(aiConfig.apiKey)}" placeholder="粘贴当前服务商的 API Key" autocomplete="off"></label><label class="api-wide"><span>接口地址</span><input id="ai-base-url" value="${escape(aiConfig.baseUrl)}" placeholder="自定义服务接口地址" autocomplete="url" ${aiConfig.provider === 'custom' ? '' : 'readonly'}></label></div><div class="api-actions"><div class="ai-connection-status" id="ai-connection-status" role="status" aria-live="polite">${status}</div><button class="button subtle small" data-test-ai>测试服务</button><button class="button primary small" data-save-ai>保存配置</button></div></div></section>`;
 }
 function settingsPage() {
   return `<div class="page settings-page">${pageHeading(routes.find(r => r.id === 'settings'), '关于与设置', '一个安静、清晰，以内容为中心的学习空间。')}<section class="about-card"><span class="about-brand">${icon('book')}</span><div><span class="eyebrow">ABOUT GUANZHI</span><h2>${escape(siteContent.name)}<span>观其脉络，知其所以。</span></h2><p>框架只负责结构、阅读与交互。教材、科目和题库由每个学习网站自行接入。</p></div></section>${cloudSettings()}${appearanceSettings()}<section class="settings-section" aria-labelledby="reading-heading"><h2 id="reading-heading">阅读设置</h2><div class="settings-panel"><div class="setting-row"><div><h3>正文大小</h3><p>调整教材内容、题目答案的阅读字号。</p></div><div class="font-options" aria-label="正文大小">${[['standard','标准'],['comfort','舒适'],['large','大号']].map(([id,label]) => `<button data-font="${id}" class="${preferences.fontSize === id ? 'active' : ''}" aria-pressed="${preferences.fontSize === id}">${label}</button>`).join('')}</div></div><div class="reading-preview reading-text">循着教材的脉络，让每一个知识点找到自己的位置。</div><div class="setting-row"><div><h3>展开所有章节</h3><p>进入大纲时，默认展开全部教材与章节。</p></div><label class="toggle"><input type="checkbox" id="expand-setting" ${preferences.expandChapters ? 'checked' : ''} aria-label="进入大纲时展开所有章节"><span></span></label></div></div><p class="settings-hint">阅读偏好保存在本机，并自动备份到云端。</p></section><section class="content-principles"><span class="content-label">内容原则</span><div><p>${icon('check')}目录遵循教材原有章节</p><p>${icon('check')}真题与模拟题分别收录</p><p>${icon('check')}内容与答案标注依据</p></div></section></div>`;
@@ -437,9 +441,29 @@ app.addEventListener('click', event => {
       apiKey: document.getElementById('ai-api-key')?.value,
       baseUrl: document.getElementById('ai-base-url')?.value,
       model: document.getElementById('ai-model')?.value,
-      enabled: document.getElementById('ai-enabled')?.checked,
+      models: aiConfig.models,
+      enabled: true,
     });
     notify('智能服务接入配置已保存在本机。');
+  }
+  if(button?.hasAttribute('data-fetch-models') || button?.hasAttribute('data-test-ai')) {
+    const providerId = document.getElementById('ai-provider')?.value || 'openai';
+    const provider = providerFor(providerId);
+    const config = { provider: providerId, apiKey: document.getElementById('ai-api-key')?.value || '', baseUrl: providerId === 'custom' ? document.getElementById('ai-base-url')?.value || '' : provider.baseUrl, model: document.getElementById('ai-model')?.value || '', enabled: true };
+    const testOnly = button.hasAttribute('data-test-ai');
+    button.disabled = true;
+    aiConnectionState = { kind: 'loading', message: testOnly ? '正在测试…' : '正在获取模型…' };
+    const status = document.getElementById('ai-connection-status'); if (status) status.innerHTML = `<span class="ai-status-dot loading"></span>${aiConnectionState.message}`;
+    void (testOnly ? testAiConnection(config) : fetchAvailableModels(config).then(models => ({ models }))).then(result => {
+      aiConfig = writeAiConfig({ ...aiConfig, ...config, models: result.models, model: config.model && result.models.includes(config.model) ? config.model : result.models[0], enabled: true });
+      aiConnectionState = { kind: 'success', message: testOnly ? result.latency : '模型已更新' };
+      if (document.getElementById('main-content')?.querySelector('.ai-settings')) renderRoute(false);
+      notify(testOnly ? `连接成功（${result.latency}ms）` : `已获取 ${result.models.length} 个可用模型。`);
+    }).catch(error => {
+      aiConnectionState = { kind: 'error', message: error.message };
+      const status = document.getElementById('ai-connection-status'); if (status) status.innerHTML = `<span class="ai-status-dot error"></span>${escape(error.message)}`;
+      notify(error.message);
+    }).finally(() => { if (button.isConnected) button.disabled = false; });
   }
   if (button?.hasAttribute('data-sidebar-toggle')) {
     sidebarCollapsed = !sidebarCollapsed; syncSidebar();
@@ -489,12 +513,23 @@ document.addEventListener('click', event => { if (event.target.closest('.skip-li
 app.addEventListener('input', event => { if(['assistant-message','assistant-float-message'].includes(event.target.id)){assistant.input(event.target.value,event.target.id==='assistant-float-message');return;} if(practice.handleInput(event.target))return; if (event.target.id === 'question-search') { filter.query = event.target.value.trim(); updateBank(); } });
 app.addEventListener('change', event => {
   if(event.target.hasAttribute('data-practice-immediate'))practice.setImmediate(event.target.checked);
+  if (event.target.id === 'ai-provider') {
+    const provider = providerFor(event.target.value);
+    const base = document.getElementById('ai-base-url');
+    const model = document.getElementById('ai-model');
+    if (base) { base.value = provider.baseUrl; base.readOnly = provider.id !== 'custom'; }
+    if (model) { model.innerHTML = `<option value="">${provider.models.length ? '选择模型' : '填写 Key 后获取模型'}</option>${provider.models.map(item => `<option value="${escape(item)}">${escape(item)}</option>`).join('')}`; model.disabled = !provider.models.length; }
+    aiConfig = writeAiConfig({ ...aiConfig, provider: provider.id, baseUrl: provider.baseUrl, models: provider.models, model: provider.models[0] || '', enabled: true });
+  }
   if (event.target.id === 'mock-kind-filter') { filter.mockKind = event.target.value; filter.paper = 'all'; document.getElementById('paper-filter').innerHTML = mockPaperOptions(); updateBank(); }
   if (event.target.id === 'paper-filter') { filter.paper = event.target.value; updateBank(); }
   if (event.target.id === 'book-filter') { filter.book = event.target.value; updateBank(); }
   if (event.target.id === 'exam-filter') { filter.exam = event.target.value; updateBank(); }
   if (event.target.id === 'year-filter') { filter.year = event.target.value; updateBank(); }
   if (event.target.id === 'expand-setting') { preferences.expandChapters = event.target.checked; savePreferences(); }
+});
+app.addEventListener('focusout', event => {
+  if (event.target.id === 'ai-api-key' && event.target.value.trim()) document.querySelector('[data-fetch-models]')?.click();
 });
 document.addEventListener('keydown', event => {
   if(event.key==='Escape'&&assistant.isOpen()){event.preventDefault();assistant.close();return;}
