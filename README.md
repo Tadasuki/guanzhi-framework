@@ -65,3 +65,7 @@ export const siteContent = {
 - `dist/assistant.js`、`dist/cloud.js`：可选云助手与同步适配器。
 
 旧备份、压缩包和预览图片不属于源码发布内容。真实 API Key、教材源文件、抽取缓存和学习记录也不应提交到 GitHub。
+
+## 许可证
+
+本框架使用 [MIT License](./LICENSE)。保留版权声明后，可以自由使用、修改、分发，并将其作为其他学习网站的基础。
