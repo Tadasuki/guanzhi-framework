@@ -11,13 +11,14 @@ export function providerFor(id) { return aiProviders.find(item => item.id === id
 export function sanitizeAiConfig(value = {}) {
   const provider = aiProviders.some(item => item.id === value?.provider) ? value.provider : 'openai';
   const preset = providerFor(provider);
-  const savedModels = Array.isArray(value?.models) ? value.models.filter(model => typeof model === 'string' && model.trim()).slice(0, 100) : [];
+  const apiKey = typeof value?.apiKey === 'string' ? value.apiKey : '';
+  const savedModels = apiKey.trim() && Array.isArray(value?.models) ? value.models.filter(model => typeof model === 'string' && model.trim()).slice(0, 100) : [];
   return {
     provider,
-    apiKey: typeof value?.apiKey === 'string' ? value.apiKey : '',
+    apiKey,
     baseUrl: provider === 'custom' && typeof value?.baseUrl === 'string' ? value.baseUrl : preset.baseUrl,
-    model: typeof value?.model === 'string' ? value.model : (savedModels[0] || preset.models[0] || ''),
-    models: savedModels.length ? savedModels : [...preset.models],
+    model: apiKey.trim() ? (typeof value?.model === 'string' ? value.model : (savedModels[0] || '')) : '',
+    models: savedModels,
     enabled: value?.enabled !== false,
   };
 }

@@ -316,7 +316,7 @@ function cloudSettings() {
 }
 function aiSettings() {
   const provider = providerFor(aiConfig.provider);
-  const models = aiConfig.models?.length ? aiConfig.models : provider.models;
+  const models = aiConfig.apiKey.trim() && aiConfig.models?.length ? aiConfig.models : [];
   const status = aiConnectionState.kind === 'success' ? `<span class="ai-status-dot success"></span>连接成功（${aiConnectionState.message}ms）` : aiConnectionState.kind === 'error' ? `<span class="ai-status-dot error"></span>${escape(aiConnectionState.message)}` : '<span class="ai-status-dot"></span>尚未测试连接';
   return `<section class="settings-section ai-settings" aria-labelledby="ai-heading"><h2 id="ai-heading">智能服务接入</h2><div class="settings-panel"><div class="appearance-description"><h3>接入你自己的 AI 服务</h3><p>预设服务商使用官方接口；自定义服务可以填写自己的兼容接口。</p></div><div class="api-grid"><label><span>服务商</span><select id="ai-provider">${aiProviders.map(item => `<option value="${item.id}" ${item.id === aiConfig.provider ? 'selected' : ''}>${item.label}</option>`).join('')}</select></label><label><span>模型</span><div class="model-control"><select id="ai-model" ${models.length ? '' : 'disabled'}><option value="">${models.length ? '选择模型' : '填写 Key 后获取模型'}</option>${models.map(model => `<option value="${escape(model)}" ${model === aiConfig.model ? 'selected' : ''}>${escape(model)}</option>`).join('')}</select><button class="icon-button model-refresh" type="button" data-fetch-models aria-label="刷新可用模型" title="刷新可用模型">${icon('expand')}</button></div></label><label class="api-wide"><span>API Key</span><input id="ai-api-key" type="password" value="${escape(aiConfig.apiKey)}" placeholder="粘贴当前服务商的 API Key" autocomplete="off"></label><label class="api-wide"><span>接口地址</span><input id="ai-base-url" value="${escape(aiConfig.baseUrl)}" placeholder="自定义服务接口地址" autocomplete="url" ${aiConfig.provider === 'custom' ? '' : 'readonly'}></label></div><div class="api-actions"><div class="ai-connection-status" id="ai-connection-status" role="status" aria-live="polite">${status}</div><button class="button subtle small" data-test-ai>测试服务</button><button class="button primary small" data-save-ai>保存配置</button></div></div></section>`;
 }
@@ -518,8 +518,10 @@ app.addEventListener('change', event => {
     const base = document.getElementById('ai-base-url');
     const model = document.getElementById('ai-model');
     if (base) { base.value = provider.baseUrl; base.readOnly = provider.id !== 'custom'; }
-    if (model) { model.innerHTML = `<option value="">${provider.models.length ? '选择模型' : '填写 Key 后获取模型'}</option>${provider.models.map(item => `<option value="${escape(item)}">${escape(item)}</option>`).join('')}`; model.disabled = !provider.models.length; }
-    aiConfig = writeAiConfig({ ...aiConfig, provider: provider.id, baseUrl: provider.baseUrl, models: provider.models, model: provider.models[0] || '', enabled: true });
+    const currentKey = document.getElementById('ai-api-key')?.value?.trim() || '';
+    if (model) { model.innerHTML = `<option value="">${currentKey ? '正在获取模型…' : '填写 API Key 后获取模型'}</option>`; model.disabled = true; }
+    aiConfig = writeAiConfig({ ...aiConfig, provider: provider.id, apiKey: currentKey, baseUrl: provider.baseUrl, models: [], model: '', enabled: true });
+    if (currentKey) setTimeout(() => document.querySelector('[data-fetch-models]')?.click(), 0);
   }
   if (event.target.id === 'mock-kind-filter') { filter.mockKind = event.target.value; filter.paper = 'all'; document.getElementById('paper-filter').innerHTML = mockPaperOptions(); updateBank(); }
   if (event.target.id === 'paper-filter') { filter.paper = event.target.value; updateBank(); }
